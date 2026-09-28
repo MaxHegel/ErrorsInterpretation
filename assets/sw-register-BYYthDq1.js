@@ -1,0 +1,1 @@
+const s=navigator.serviceWorker;if(s){const e=new URL(".",document.baseURI);navigator.serviceWorker.register(new URL("sw.js",e).toString().replace(/\/$/,"/sw.js")).catch(r=>console.warn("SW не зарегистрирован:",r))}
