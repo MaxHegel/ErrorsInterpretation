@@ -1,7 +1,9 @@
 /* Service worker: офлайн-книга.
-   Стратегия: навигации — network-first с фолбэком к index.html;
-   все GET-ресурсы того же origins — stale-while-revalidate. */
-const VERSION = 'tolk-v1';
+   Навигации — network-first (no-store) с фолбэком к index.html → всегда свежая оболочка.
+   Хэшированные ассеты (immutable) — stale-while-revalidate.
+   VERSION подставляется на сборке (хэш index.html): каждый деплой = новое имя кэша,
+   старый кэш удаляется при activate → нет устаревших бандлов у пользователя. */
+const VERSION = 'tolk-BMANC786';
 const PRECACHE = [
   './',
   './index.html',
@@ -32,13 +34,16 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
-  // Навигации: пробуем сеть, при офлайне отдаём сохранённый index.html
+  // Навигации: всегда свежий index.html из сети (no-store — мимо HTTP-кэша),
+  // при офлайне отдаём сохранённый index.html
   if (req.mode === 'navigate') {
     e.respondWith(
-      fetch(req)
+      fetch(req, { cache: 'no-store' })
         .then((res) => {
-          const copy = res.clone();
-          caches.open(VERSION).then((c) => c.put('./index.html', copy));
+          if (res && res.ok) {
+            const copy = res.clone();
+            caches.open(VERSION).then((c) => c.put('./index.html', copy));
+          }
           return res;
         })
         .catch(() =>
