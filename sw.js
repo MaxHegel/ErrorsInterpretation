@@ -3,7 +3,7 @@
    Хэшированные ассеты (immutable) — stale-while-revalidate.
    VERSION подставляется на сборке (хэш index.html): каждый деплой = новое имя кэша,
    старый кэш удаляется при activate → нет устаревших бандлов у пользователя. */
-const VERSION = 'tolk-BrKW55-C';
+const VERSION = 'tolk--AIqTZmn';
 const PRECACHE = [
   './',
   './index.html',
